@@ -1,0 +1,633 @@
+/* 通用区块样式 */
+.section-container {
+    max-width: 1226px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-top: 40px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.section-header p {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-left: 10px;
+}
+
+.view-all {
+    font-size: 14px;
+    color: #7f8c8d;
+    transition: color 0.3s;
+}
+
+.view-all:hover {
+    color: #e74c3c;
+}
+
+/* 新鲜好物样式 */
+.fresh-goods {
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+.goods-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.goods-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.goods-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.goods-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #e74c3c;
+    color: white;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.goods-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.goods-image > div {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #f8f8f8;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.goods-image > div > span {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.goods-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.3s !important;
+}
+
+.goods-item:hover .goods-image img {
+    transform: scale(1.05);
+}
+
+img.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.goods-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.goods-name {
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.goods-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+/* 人气推荐样式 */
+.popular-recommendations {
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.recommendation-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.recommendation-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.recommendation-image > div {
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #f8f8f8;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.recommendation-image > div > span {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.recommendation-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.3s !important;
+}
+
+.recommendation-item:hover .recommendation-image img {
+    transform: scale(1.05);
+}
+
+.recommendation-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.recommendation-info h3 {
+    font-size: 16px;
+    color: #2c3e50;
+    margin: 0 0 5px 0;
+}
+
+.recommendation-info p {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* 热门品牌样式 */
+.popular-brands {
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+.brands-slider {
+    position: relative;
+    overflow: hidden;
+}
+
+.brands-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.brand-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.brand-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.brand-item img {
+    width: 100%;
+    height: auto;
+}
+
+.slider-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    pointer-events: none;
+}
+
+.slider-btn {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    pointer-events: auto;
+}
+
+.slider-btn:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 分类商品样式 */
+.category-section {
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-top: 40px;
+}
+
+.category-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.category-tabs a {
+    font-size: 14px;
+    color: #7f8c8d;
+    transition: color 0.3s;
+}
+
+.category-tabs a:hover {
+    color: #e74c3c;
+}
+
+.category-products {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    gap: 20px;
+}
+
+.category-banner {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.category-banner img {
+    width: 100%;
+    height: auto;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.product-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    width: 100%;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s;
+}
+
+.product-item:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 12px;
+}
+
+.product-name {
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-desc {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+
+    .goods-grid,
+    .recommendations-grid,
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .brands-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .goods-grid,
+    .recommendations-grid,
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .brands-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .category-products {
+        grid-template-columns: 1fr;
+    }
+
+    .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .category-tabs {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .goods-grid,
+    .recommendations-grid,
+    .brands-container,
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* 结束栏样式 */
+.footer {
+    background-color: #f8f8f8;
+    padding: 40px 0;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.footer-section {
+    flex: 1;
+}
+
+.footer-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-link {
+    text-align: center;
+}
+
+.footer-link .icon {
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.footer-link .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.footer-link span {
+    font-size: 14px;
+    color: #666;
+}
+
+.app-download {
+    text-align: center;
+}
+
+.qr-code {
+    width: 120px;
+    height: 120px;
+    background-color: #fff;
+    padding: 10px;
+    margin: 0 auto 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code img {
+    width: 100%;
+    height: 100%;
+}
+
+.app-download p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.app-download a {
+    font-size: 14px;
+    color: #e74c3c;
+    text-decoration: none;
+}
+
+.service-hotline {
+    text-align: center;
+}
+
+.service-hotline p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.service-hotline span {
+    font-size: 14px;
+    color: #666;
+}
+
+.footer-bottom {
+    background-color: #333;
+    padding: 30px 0;
+    margin-top: 20px;
+}
+
+.footer-advantages {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 20px;
+}
+
+.advantage-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.advantage-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.advantage-icon img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) invert(1);
+}
+
+.advantage-item span {
+    font-size: 16px;
+    color: #fff;
+}
+
+.footer-info {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.footer-nav {
+    margin-bottom: 15px;
+}
+
+.footer-nav a {
+    color: #999;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 14px;
+}
+
+.footer-copyright {
+    color: #666;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .footer-advantages {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .footer-nav a {
+        display: inline-block;
+        margin: 5px;
+    }
+}
