@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.achu</groupId>
-    <artifactId>tlias</artifactId>
+    <artifactId>ems</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>tlias</name>
-    <description>tlias</description>
+    <name>ems</name>
+    <description>ems</description>
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

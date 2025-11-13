@@ -167,7 +167,7 @@ a:hover {
 
 /* 左侧分类菜单 */
 .category-menu {
-    width: 200px;
+    width: 250px;
     background-color: #ffffff;
     border-radius: 8px;
     padding: 15px 0;
@@ -198,6 +198,8 @@ a:hover {
     margin-top: 5px;
     font-size: 12px;
     color: #7f8c8d;
+    white-space: normal;
+    line-height: 1.4;
 }
 
 /* 轮播图区域 */
