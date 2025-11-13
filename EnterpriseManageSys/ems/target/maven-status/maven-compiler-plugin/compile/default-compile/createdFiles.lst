@@ -1,0 +1,12 @@
+com\achu\tlias\controller\WorkerController.class
+com\achu\tlias\mapper\DeptMapper.class
+com\achu\tlias\service\impl\WorkerServiceImpl.class
+com\achu\tlias\TliasApplication.class
+com\achu\tlias\service\impl\DeptServiceImpl.class
+com\achu\tlias\mapper\WorkerMapper.class
+com\achu\tlias\service\WorkerService.class
+com\achu\tlias\pojo\Worker.class
+com\achu\tlias\service\DeptService.class
+com\achu\tlias\pojo\Response.class
+com\achu\tlias\pojo\Dept.class
+com\achu\tlias\controller\DeptController.class
