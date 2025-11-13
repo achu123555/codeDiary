@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        /* 容器样式 */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 220px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .sidebar .logo {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .sidebar .menu {
+            margin-top: 20px;
+        }
+        
+        .sidebar .menu > li {
+            position: relative;
+            list-style: none;
+        }
+        
+        .sidebar .menu > li > a {
+            display: block;
+            padding: 15px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        
+        .sidebar .menu > li > a:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar .menu > li.active > a,
+        .sidebar .menu > li.sysinfo-active > a {
+            background-color: #3498db;
+        }
+        
+        .sidebar .menu > li .arrow {
+            float: right;
+            transition: transform 0.3s;
+        }
+        
+        .sidebar .menu > li.sysinfo-active .arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* 子菜单样式 */
+        #sysinfo-submenu {
+            display: none;
+            background-color: #1a252f;
+        }
+        
+        #sysinfo-submenu li {
+            list-style: none;
+        }
+        
+        #sysinfo-submenu li a {
+            display: block;
+            padding: 12px 30px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        
+        #sysinfo-submenu li a:hover {
+            background-color: #2c3e50;
+        }
+        
+        #sysinfo-submenu li.active a {
+            color: #ecf0f1;
+            background-color: #2c3e50;
+            border-left: 3px solid #3498db;
+        }
+        
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-default {
+            background-color: #ecf0f1;
+            color: #34495e;
+        }
+        
+        .btn-default:hover {
+            background-color: #bdc3c7;
+        }
+        
+        /* 提示框样式 */
+        .notification {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 90%;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .notification.warning {
+            background-color: #ff9800;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 10px 0;
+            }
+            
+            .sidebar .logo {
+                padding: 10px 0;
+            }
+            
+            .sidebar .menu > li > a {
+                padding: 10px 15px;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+            
+            /* 表格响应式 */
+            .table-container {
+                overflow-x: auto;
+                padding: 10px;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+            
+            /* 按钮响应式 */
+            .btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            
+            /* 模态框响应式 */
+            .modal-content {
+                width: 90%;
+                margin: auto;
+            }
+            
+            /* 表单响应式 */
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            /* 搜索区域响应式 */
+            .search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            /* 分页响应式 */
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .sidebar .menu > li > a {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            /* 表格单元格响应式 */
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            background-color: white;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* 输入框和选择框样式 */
+        input[type="text"],
+        input[type="date"],
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 4px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #ecf0f1;
+            text-align: right;
+        }
+        
+        .modal-footer .btn {
+            margin-left: 10px;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        /* 搜索区域样式 */
+        .search-area {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .search-item {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+            flex: 1;
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        /* 操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        .page-btn.active {
+            background-color: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+        
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-jump input {
+            width: 60px;
+            text-align: center;
+        }
+        
+        /* 头像样式 */
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        /* 编辑和删除按钮样式 */
+        .edit-btn,
+        .delete-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* 批量删除按钮特殊样式 */
+        #batch-delete-btn {
+            background-color: #bdbdbd;
+            color: #333;
+            display: none;
+        }
+        
+        #batch-delete-btn.active {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏导航 -->
+        <div class="sidebar">
+            <div class="logo">企业管理系统</div>
+            <ul class="menu">
+                <li id="home-menu"><a onclick="showSection('home')">首页</a></li>
+                <li id="sysinfo-menu">
+                    <a onclick="toggleSubmenu()">系统信息管理 <span class="arrow">▼</span></a>
+                    <ul id="sysinfo-submenu">
+                        <li><a onclick="showSection('dept')">部门管理</a></li>
+                        <li><a onclick="showSection('emp')">员工管理</a></li>
+                    </ul>
+                </li>
+                <li id="data-menu"><a onclick="showSection('data')">数据统计管理</a></li>
+            </ul>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 首页区域 -->
+            <div id="home-section" class="section">
+                <div class="header">
+                    <h1>首页</h1>
+                </div>
+                <div class="table-container">
+                    <p>欢迎使用企业管理系统</p>
+                </div>
+            </div>
+            
+            <!-- 部门管理区域 -->
+            <div id="dept-section" class="section" style="display: none;">
+                <div class="header">
+                    <h1>部门管理</h1>
+                </div>
+                <div class="table-container">
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="showAddModal()">新增部门</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>部门ID</th>
+                                <th>部门名称</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dept-tbody">
+                            <tr>
+                                <td colspan="3" style="color:#888; text-align:center;">暂无部门信息</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 员工管理区域 -->
+            <div id="emp-section" class="section" style="display: none;">
+                <div class="header">
+                    <h1>员工管理</h1>
+                </div>
+                <!-- 搜索区域 -->
+                <div class="search-area">
+                    <div class="search-row">
+                        <div class="search-item">
+                            <label>姓名</label>
+                            <input type="text" id="search-emp-name" placeholder="请输入员工姓名">
+                        </div>
+                        <div class="search-item">
+                            <label>性别</label>
+                            <select id="search-emp-gender">
+                                <option value="">请选择</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>入职时间</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="date" id="start-date">
+                                <span>到</span>
+                                <input type="date" id="end-date">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="searchEmployees()">查询</button>
+                            <button class="btn btn-default" onclick="resetSearch()">清空</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 操作按钮区域 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="showAddEmpModal()">新增员工</button>
+                    <button id="batch-delete-btn" class="btn btn-danger" onclick="batchDeleteEmployees()">批量删除</button>
+                </div>
+                <!-- 员工表格 -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th>
+                                <th>姓名</th>
+                                <th>性别</th>
+                                <th>头像</th>
+                                <th>所属部门</th>
+                                <th>职位</th>
+                                <th>入职日期</th>
+                                <th>最后操作时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emp-tbody">
+                            <tr>
+                                <td colspan="9" style="color:#888;">暂无员工信息</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- 分页控件 -->
+                    <div class="pagination">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label>每页展示记录数</label>
+                            <select id="page-size-select" onchange="changePageSize()">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                        <div class="page-controls">
+                            <span style="margin-right: 20px;">共500条数据</span>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="page-btn" id="prev-page">←</button>
+                                <button class="page-btn active" onclick="changePage(1)">1</button>
+                                <button class="page-btn" onclick="changePage(2)">2</button>
+                                <button class="page-btn" onclick="changePage(3)">3</button>
+                                <button class="page-btn">...</button>
+                                <button class="page-btn" onclick="changePage(50)">50</button>
+                                <button class="page-btn" id="next-page">→</button>
+                            </div>
+                        </div>
+                        <div class="page-jump" style="display: flex; align-items: center; gap: 10px;">
+                            <span>跳至</span>
+                            <input type="number" id="page-jump" min="1" value="1" onchange="jumpToPage()" style="width: 60px;">
+                            <span>页</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 数据统计管理区域 -->
+            <div id="data-section" class="section" style="display: none;">
+                <div class="header">
+                    <h1>数据统计管理</h1>
+                </div>
+                <div class="table-container">
+                    <p>数据统计管理功能开发中...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 提示框 -->
+    <div id="notification" class="notification">
+        <div class="notification-content"></div>
+    </div>
+    
+    <!-- 添加部门模态框 -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新增部门</span>
+                <button class="btn btn-default" onclick="closeAddModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>部门名称</label>
+                    <input type="text" id="new-dept-name" placeholder="请输入部门名称">
+                    <div id="name-error" class="error-message"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="close-add-modal" onclick="closeAddModal()">取消</button>
+                <button class="btn btn-primary" id="add-dept-btn" onclick="addDepartment()">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑部门模态框 -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>编辑部门</span>
+                <button class="btn btn-default" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>部门名称</label>
+                    <input type="text" id="edit-dept-name" placeholder="请输入部门名称">
+                    <div id="edit-name-error" class="error-message"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="close-edit-modal" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" id="save-dept-btn" onclick="saveDepartment()">确定</button>
+            </div>
+        </div>
+    </div>
+    <!-- 新增员工模态框 -->
+    <div id="add-emp-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新增员工</span>
+                <button class="btn btn-default" onclick="closeAddEmpModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>员工姓名</label>
+                    <input type="text" id="new-emp-name" placeholder="请输入员工姓名">
+                    <div id="emp-name-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label>性别</label>
+                    <select id="new-emp-gender">
+                        <option value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>头像</label>
+                    <input type="file" id="new-emp-avatar">
+                </div>
+                <div class="form-group">
+                    <label>所属部门</label>
+                    <select id="new-emp-dept">
+                        <option value="">请选择</option>
+                        <option value="学工部">学工部</option>
+                        <option value="教研部">教研部</option>
+                        <option value="行政部">行政部</option>
+                        <option value="财务部">财务部</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>职位</label>
+                    <input type="text" id="new-emp-position" placeholder="请输入职位">
+                </div>
+                <div class="form-group">
+                    <label>入职日期</label>
+                    <input type="date" id="new-emp-entry-date">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" id="close-add-emp-modal" onclick="closeAddEmpModal()">取消</button>
+                <button class="btn btn-primary" id="add-emp-btn" onclick="addEmployee()">确定</button>
+            </div>
+        </div>
+    </div>
+    <!-- 编辑员工模态框 -->
+    <div id="edit-emp-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>编辑员工</span>
+                <button class="btn btn-default" id="close-edit-emp-modal" onclick="closeEditEmpModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>员工姓名</label>
+                    <input type="text" id="edit-emp-name" placeholder="请输入员工姓名">
+                    <div id="edit-emp-name-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label>性别</label>
+                    <select id="edit-emp-gender">
+                        <option value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>所属部门</label>
+                    <select id="edit-emp-dept">
+                        <option value="">请选择</option>
+                        <option value="学工部">学工部</option>
+                        <option value="教研部">教研部</option>
+                        <option value="行政部">行政部</option>
+                        <option value="财务部">财务部</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>职位</label>
+                    <input type="text" id="edit-emp-position" placeholder="请输入职位">
+                </div>
+                <div class="form-group">
+                    <label>入职日期</label>
+                    <input type="date" id="edit-emp-entry-date">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeEditEmpModal()">取消</button>
+                <button class="btn btn-primary" id="save-emp-btn" onclick="saveEmployee()">确定</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 全局变量
+        let departments = [];
+        let employees = [];
+        let currentPage = 1;
+        let pageSize = 10;
+        let currentEditId = null;
+        
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const content = notification.querySelector('.notification-content');
+            
+            content.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示首页
+            showSection('home');
+            
+            // 绑定分页按钮事件
+            bindPaginationButtons();
+            
+            // 绑定部门相关事件
+            bindDepartmentEvents();
+            
+            // 绑定员工相关事件
+            bindEmployeeEvents();
+        });
+        
+        // 绑定部门相关事件
+        function bindDepartmentEvents() {
+            // 绑定添加部门模态框的保存按钮
+            if (document.getElementById('add-dept-btn')) {
+                document.getElementById('add-dept-btn').addEventListener('click', addDepartment);
+            }
+            // 绑定添加部门模态框的关闭按钮
+            if (document.getElementById('close-add-modal')) {
+                document.getElementById('close-add-modal').addEventListener('click', closeAddModal);
+            }
+            // 绑定编辑部门模态框的保存按钮
+            if (document.getElementById('save-dept-btn')) {
+                document.getElementById('save-dept-btn').addEventListener('click', saveDepartment);
+            }
+            // 绑定编辑部门模态框的关闭按钮
+            if (document.getElementById('close-edit-modal')) {
+                document.getElementById('close-edit-modal').addEventListener('click', closeEditModal);
+            }
+        }
+        
+        // 绑定员工相关事件
+        function bindEmployeeEvents() {
+            // 绑定编辑员工模态框的关闭按钮和保存按钮
+            if (document.getElementById('close-edit-emp-modal')) {
+                document.getElementById('close-edit-emp-modal').addEventListener('click', closeEditEmpModal);
+            }
+            
+            if (document.getElementById('save-emp-btn')) {
+                document.getElementById('save-emp-btn').addEventListener('click', saveEmployee);
+            }
+            
+            // 绑定新增员工模态框的关闭按钮和保存按钮
+            if (document.getElementById('close-add-emp-modal')) {
+                document.getElementById('close-add-emp-modal').addEventListener('click', closeAddEmpModal);
+            }
+            
+            if (document.getElementById('add-emp-btn')) {
+                document.getElementById('add-emp-btn').addEventListener('click', addEmployee);
+            }
+        }
+        
+        // 展开/收起系统信息管理子菜单，并高亮主菜单
+        function toggleSubmenu() {
+            var submenu = document.getElementById('sysinfo-submenu');
+            var sysinfoMenu = document.getElementById('sysinfo-menu');
+            // 切换子菜单显示状态
+            submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+            
+            // 如果子菜单是展开的，则高亮主菜单
+            if (submenu.style.display === 'block') {
+                document.querySelectorAll('.sidebar .menu li').forEach(function(item) {
+                    item.classList.remove('active', 'sysinfo-active');
+                });
+                sysinfoMenu.classList.add('sysinfo-active');
+            } else {
+                // 如果子菜单收起，则不高亮任何菜单
+                sysinfoMenu.classList.remove('sysinfo-active');
+            }
+        }
+        
+        // 切换主内容区显示
+        function showSection(section) {
+            // 控制部门管理区显示与隐藏
+            var deptSection = document.getElementById('dept-section');
+            deptSection.style.display = (section === 'dept') ? 'block' : 'none';
+
+            // 控制员工管理区显示与隐藏
+            var empSection = document.getElementById('emp-section');
+            empSection.style.display = (section === 'emp') ? 'block' : 'none';
+
+            // 控制首页区域显示与隐藏
+            var homeSection = document.getElementById('home-section');
+            homeSection.style.display = (section === 'home') ? 'block' : 'none';
+            
+            // 控制数据统计管理区域显示与隐藏
+            var dataSection = document.getElementById('data-section');
+            dataSection.style.display = (section === 'data') ? 'block' : 'none';
+
+            // 激活菜单高亮
+            var menuItems = document.querySelectorAll('.sidebar .menu > li');
+            menuItems.forEach(function(item) { item.classList.remove('active', 'sysinfo-active'); });
+            // 激活子菜单高亮
+            var subItems = document.querySelectorAll('#sysinfo-submenu li');
+            subItems.forEach(function(item) { item.classList.remove('active'); });
+
+            // 首页
+            if(section === 'home') {
+                menuItems[0].classList.add('active');
+                document.getElementById('sysinfo-submenu').style.display = 'none';
+            }
+            // 系统信息管理主菜单
+            if(section === 'sysinfo') {
+                menuItems[1].classList.add('sysinfo-active');
+                document.getElementById('sysinfo-submenu').style.display = 'block';
+            }
+            // 部门管理
+            if(section === 'dept') {
+                menuItems[1].classList.add('sysinfo-active');
+                subItems[0].classList.add('active');
+                document.getElementById('sysinfo-submenu').style.display = 'block';
+                // 确保部门数据是最新的
+                loadDepartments();
+            }
+            // 员工管理
+            if(section === 'emp') {
+                menuItems[1].classList.add('sysinfo-active');
+                subItems[1].classList.add('active');
+                document.getElementById('sysinfo-submenu').style.display = 'block';
+                // 加载员工数据
+                loadEmployees();
+            }
+            // 数据统计管理
+            if(section === 'data') {
+                menuItems[2].classList.add('active');
+                document.getElementById('sysinfo-submenu').style.display = 'none';
+            }
+        }
+        
+        // 加载部门数据
+        async function loadDepartments() {
+            try {
+                // 每次调用都发送API请求获取最新数据
+                const response = await axios.get('/depts');
+                //res.data是success对象 要再.data才能访问到部门对象
+                departments = response.data.data;
+                renderDepartments(departments);
+            } catch (error) {
+                console.error('请求部门数据失败:', error);
+                // 显示暂无部门信息
+                const tbody = document.getElementById('dept-tbody');
+                tbody.innerHTML = '<tr><td colspan="3" style="color:#888; text-align:center;">暂无部门信息</td></tr>';
+            }
+        }
+        
+        // 渲染部门列表
+        function renderDepartments(deptList) {
+            const tbody = document.getElementById('dept-tbody');
+            tbody.innerHTML = '';
+            
+            if (deptList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:#888; text-align:center;">暂无部门信息</td></tr>';
+                return;
+            }
+            
+            // 按数据库ID排序
+            const sortedDeptList = [...deptList].sort((a, b) => a.id - b.id);
+            
+            // 使用索引+1作为显示的序号，保持数据库ID用于操作
+            sortedDeptList.forEach((dept, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${dept.name}</td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditPage(${dept.id})">编辑</button>
+                        <button class="delete-btn" onclick="confirmDelete(${dept.id})">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 显示添加部门模态框
+        function showAddModal() {
+            document.getElementById('add-modal').style.display = 'flex';
+            document.getElementById('new-dept-name').value = '';
+            document.getElementById('name-error').textContent = '';
+        }
+        
+        // 关闭添加部门模态框
+        function closeAddModal() {
+            document.getElementById('add-modal').style.display = 'none';
+        }
+        
+        // 验证部门名称
+        function validateName() {
+            const name = document.getElementById('new-dept-name').value.trim();
+            const errorElement = document.getElementById('name-error');
+
+            if (name.length < 2 || name.length > 10) {
+                errorElement.textContent = '部门名称长度必须为2-10个字符';
+                return false;
+            } else {
+                errorElement.textContent = '';
+                return true;
+            }
+        }
+        
+        // 添加部门
+        async function addDepartment() {
+            if (!validateName()) return;
+
+            const name = document.getElementById('new-dept-name').value.trim();
+            console.log('开始添加部门:', name);
+            
+            // 重置通知区域，避免显示残留的通知
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.classList.remove('show', 'success', 'error', 'warning');
+            }
+            
+            try {
+                // 发送POST请求添加部门，设置超时和其他配置
+                const response = await axios.post(`/depts`, {name}, {
+                    timeout: 10000, // 设置10秒超时
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('部门添加响应状态:', response.status);
+                console.log('响应数据:', response.data);
+                
+                // 只要没有抛出异常，就认为添加成功
+                // 先显示成功通知和关闭模态框
+                closeAddModal();
+                showNotification('部门添加成功！');
+                
+                // 然后重新加载部门列表，单独处理错误
+                try {
+                    console.log('开始重新加载部门列表...');
+                    await loadDepartments();
+                    console.log('部门列表加载完成');
+                } catch (loadError) {
+                    console.error('加载部门列表失败，但添加已成功:', loadError);
+                    // 加载失败不影响已显示的添加成功提示
+                    // 可以选择是否显示加载失败的通知，但不覆盖成功提示
+                }
+            } catch (error) {
+                console.error('添加部门请求异常:', error);
+                if (error.response) {
+                    console.error('HTTP错误状态:', error.response.status);
+                    console.error('错误响应数据:', error.response.data);
+                    // 显示具体的错误信息
+                    showNotification(`添加部门失败: ${error.response.data.message || '未知错误'}`, 'error');
+                } else if (error.request) {
+                    console.error('请求发送失败:', error.request);
+                    showNotification('网络请求失败，请检查网络连接', 'error');
+                } else {
+                    console.error('请求配置错误:', error.message);
+                    showNotification('添加部门失败，请重试', 'error');
+                }
+            }
+        }
+        
+        // 确认删除部门
+        async function confirmDelete(id) {
+            if (confirm('确认删除吗?')) {
+                try {
+                    // 发送DELETE请求删除部门
+                    await axios.delete(`/depts/${id}`);
+                    
+                    // 重新加载部门列表
+                    await loadDepartments();
+                    showNotification('部门删除成功！');
+                } catch (error) {
+                    console.error('删除部门失败:', error);
+                    showNotification('删除部门失败，请重试！', 'error');
+                }
+            }
+        }
+        
+        // 打开编辑页面
+        async function openEditPage(id) {
+            try {
+                // 这里使用模拟数据，实际项目中替换为真实API调用
+                const deptInfo = departments.find(dept => dept.id === id);
+                
+                currentEditId = deptInfo.id;
+                document.getElementById('edit-dept-name').value = deptInfo.name;
+                document.getElementById('edit-name-error').textContent = '';
+                document.getElementById('edit-modal').style.display = 'flex';
+            } catch (error) {
+                console.error('获取部门信息失败:', error);
+                showNotification('获取部门信息失败，请重试！', 'error');
+            }
+        }
+        
+        // 关闭编辑模态框
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            currentEditId = null;
+        }
+        
+        // 验证编辑的部门名称
+        function validateEditName() {
+            const name = document.getElementById('edit-dept-name').value.trim();
+            const errorElement = document.getElementById('edit-name-error');
+
+            if (name.length < 2 || name.length > 10) {
+                errorElement.textContent = '部门名称长度必须为2-10个字符';
+                return false;
+            } else {
+                errorElement.textContent = '';
+                return true;
+            }
+        }
+        
+        // 保存编辑的部门
+        async function saveDepartment() {
+            if (!validateEditName()) return;
+
+            const name = document.getElementById('edit-dept-name').value.trim();
+            console.log('开始更新部门:', { id: currentEditId, name: name });
+            
+            // 重置通知区域，避免显示残留的通知
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.classList.remove('show', 'success', 'error', 'warning');
+            }
+
+            try {
+                // 发送PUT请求更新部门，设置超时和其他配置
+                const response = await axios.put(`/depts/${currentEditId}`, { name }, {
+                    timeout: 10000,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('部门更新响应状态:', response.status);
+                console.log('响应数据:', response.data);
+                
+                // 先关闭模态框并显示成功通知
+                closeEditModal();
+                showNotification('部门更新成功！');
+                
+                // 然后重新加载部门列表，单独处理错误
+                try {
+                    console.log('开始重新加载部门列表...');
+                    await loadDepartments();
+                    console.log('部门列表加载完成');
+                } catch (loadError) {
+                    console.error('加载部门列表失败，但更新已成功:', loadError);
+                    // 加载失败不影响已显示的更新成功提示
+                }
+            } catch (error) {
+                console.error('更新部门请求异常:', error);
+                if (error.response) {
+                    console.error('HTTP错误状态:', error.response.status);
+                    console.error('错误响应数据:', error.response.data);
+                    showNotification(`更新部门失败: ${error.response.data.message || '未知错误'}`, 'error');
+                } else if (error.request) {
+                    console.error('请求发送失败:', error.request);
+                    showNotification('网络请求失败，请检查网络连接', 'error');
+                } else {
+                    console.error('请求配置错误:', error.message);
+                    showNotification('更新部门失败，请重试', 'error');
+                }
+            }
+        }
+        
+        // 加载员工数据
+        async function loadEmployees() {
+            try {
+                // 发送GET请求获取员工数据，包含分页参数
+                const response = await axios.get("http://localhost:8080/emp", {
+                    params: {
+                        page: currentPage,
+                        pageSize: pageSize
+                    }
+                });
+                
+                // 获取响应数据
+                const result = response.data.data;
+                
+                // 处理不同的数据结构情况
+                let employeesData = [];
+                let totalCount = 0;
+                
+                if (Array.isArray(result)) {
+                    // 如果data是数组，直接使用
+                    employeesData = result;
+                    
+                    // 记录数组长度作为总数据量
+                    totalCount = result.length;
+                    
+                    // 实现前端分页逻辑 - 当后端返回全部数据时
+                    const startIndex = (currentPage - 1) * pageSize;
+                    const endIndex = startIndex + pageSize;
+                    employeesData = result.slice(startIndex, endIndex);
+                } else if (result && typeof result === 'object') {
+                    // 如果data是对象，尝试从不同字段获取数据
+                    employeesData = result.records || result.data || [];
+                    // 优先使用对象中的total字段，如果没有则使用数组长度
+                    totalCount = result.total || employeesData.length;
+                }
+                
+                employees = employeesData;
+                
+                // 渲染员工列表
+                renderEmployees(employees);
+                updateBatchDeleteButton();
+                
+                // 更新分页信息
+                document.querySelector('.pagination .page-controls span').textContent = `共${totalCount}条数据`;
+                
+                // 更新分页按钮状态
+                updatePaginationButtons(totalCount);
+            } catch (error) {
+                console.error('请求员工数据失败:', error);
+                // 显示暂无员工信息
+                const tbody = document.getElementById('emp-tbody');
+                tbody.innerHTML = '<tr><td colspan="9" style="color:#888; text-align:center;">暂无员工信息</td></tr>';
+            }
+        }
+
+        
+        // 渲染员工列表
+        function renderEmployees(empList) {
+            const tbody = document.getElementById('emp-tbody');
+            tbody.innerHTML = '';
+            
+            if (empList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="color:#888; text-align:center;">暂无员工信息</td></tr>';
+                return;
+            }
+            
+            empList.forEach((emp) => {
+                // 根据新的数据库字段结构重新映射
+                const empId = emp.id || 0;
+                const empName = emp.name || '未知';
+                // 处理gender字段：1->男，0->女
+                const gender = emp.gender === 1 ? '男' : emp.gender === 0 ? '女' : '-';
+                // 处理职位字段
+                const position = emp.position || '-';
+                // 处理入职日期字段
+                const entryDate = emp.entry_date || emp.entryDate || '-';
+                // 处理更新时间字段
+                const updateTime = emp.update_time || emp.updateTime || '-';
+                // 处理部门ID字段
+                const DEPT_MAP = {
+                    1: '法务部',
+                    2: '教研部',
+                    3: '咨询部',
+                    4: '就业部',
+                    5: '人事部',
+                    6: '行政部'
+                };
+                const deptName = DEPT_MAP[emp.deptId] || '-';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="emp-checkbox" data-id="${empId}"></td>
+                    <td>${empName}</td>
+                    <td>${gender}</td>
+                    <td>-</td>
+                    <td>${deptName}</td>
+                    <td>${position}</td>
+                    <td>${entryDate}</td>
+                    <td>${updateTime}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editEmployee(${empId})">编辑</button>
+                        <button class="delete-btn" onclick="deleteEmployee(${empId})">删除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        
+            // 绑定每个复选框的事件
+            document.querySelectorAll('.emp-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateBatchDeleteButton);
+            });
+        }
+        
+        // 显示新增员工模态框
+        function showAddEmpModal() {
+            document.getElementById('add-emp-modal').style.display = 'flex';
+            // 清空输入框
+            document.getElementById('new-emp-name').value = '';
+            document.getElementById('new-emp-gender').value = '';
+            document.getElementById('new-emp-avatar').value = '';
+            document.getElementById('new-emp-dept').value = '';
+            document.getElementById('new-emp-position').value = '';
+            document.getElementById('new-emp-entry-date').value = '';
+            // 清空错误信息
+            document.getElementById('emp-name-error').textContent = '';
+        }
+        
+        // 关闭新增员工模态框
+        function closeAddEmpModal() {
+            document.getElementById('add-emp-modal').style.display = 'none';
+        }
+        
+        // 添加员工
+        async function addEmployee() {
+            // 获取表单数据
+            const name = document.getElementById('new-emp-name').value.trim();
+            const gender = document.getElementById('new-emp-gender').value;
+            const avatar = document.getElementById('new-emp-avatar').files[0];
+            const department = document.getElementById('new-emp-dept').value;
+            const position = document.getElementById('new-emp-position').value.trim();
+            const entryDate = document.getElementById('new-emp-entry-date').value;
+
+            // 简单验证
+            let isValid = true;
+            if (!name) {
+                document.getElementById('emp-name-error').textContent = '员工姓名不能为空';
+                isValid = false;
+            } else {
+                document.getElementById('emp-name-error').textContent = '';
+            }
+
+            if (!gender) {
+                showNotification('请选择性别', 'warning');
+                isValid = false;
+            }
+
+            if (!department) {
+                showNotification('请选择所属部门', 'warning');
+                isValid = false;
+            }
+
+            if (!position) {
+                showNotification('请输入职位', 'warning');
+                isValid = false;
+            }
+
+            if (!entryDate) {
+                showNotification('请选择入职日期', 'warning');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            try {
+                // 构建员工数据对象
+                const empData = {
+                    name,
+                    gender,
+                    department,
+                    position,
+                    entryDate
+                };
+
+                // 发送POST请求添加员工
+                await axios.post('/emps', empData);
+
+                // 关闭模态框并重新加载员工数据
+                closeAddEmpModal();
+                currentPage = 1; // 新增后回到第一页
+                await loadEmployees();
+                showNotification('员工添加成功！');
+            } catch (error) {
+                console.error('添加员工失败:', error);
+                showNotification('添加员工失败，请重试！', 'error');
+            }
+        }
+        
+        // 编辑员工
+        function editEmployee(id) {
+            // 查找要编辑的员工
+            const emp = employees.find(e => e.id == id);
+            if (!emp) {
+                showNotification('找不到该员工信息', 'error');
+                return;
+            }
+            
+            // 填充编辑表单
+            document.getElementById('edit-emp-name').value = emp.name;
+            document.getElementById('edit-emp-gender').value = emp.gender;
+            document.getElementById('edit-emp-dept').value = emp.department;
+            document.getElementById('edit-emp-position').value = emp.position;
+            document.getElementById('edit-emp-entry-date').value = emp.entryDate;
+            document.getElementById('edit-emp-name-error').textContent = '';
+            
+            // 存储当前编辑的员工ID
+            document.getElementById('edit-emp-modal').dataset.empId = id;
+            
+            // 显示编辑模态框
+            document.getElementById('edit-emp-modal').style.display = 'flex';
+        }
+        
+        // 关闭编辑员工模态框
+        function closeEditEmpModal() {
+            document.getElementById('edit-emp-modal').style.display = 'none';
+        }
+        
+        // 保存编辑的员工
+        async function saveEmployee() {
+            // 获取表单数据
+            const id = document.getElementById('edit-emp-modal').dataset.empId;
+            const name = document.getElementById('edit-emp-name').value.trim();
+            const gender = document.getElementById('edit-emp-gender').value;
+            const department = document.getElementById('edit-emp-dept').value;
+            const position = document.getElementById('edit-emp-position').value.trim();
+            const entryDate = document.getElementById('edit-emp-entry-date').value;
+
+            // 简单验证
+            let isValid = true;
+            if (!name) {
+                document.getElementById('edit-emp-name-error').textContent = '员工姓名不能为空';
+                isValid = false;
+            } else {
+                document.getElementById('edit-emp-name-error').textContent = '';
+            }
+
+            if (!gender) {
+                showNotification('请选择性别', 'warning');
+                isValid = false;
+            }
+
+            if (!department) {
+                showNotification('请选择所属部门', 'warning');
+                isValid = false;
+            }
+
+            if (!position) {
+                showNotification('请输入职位', 'warning');
+                isValid = false;
+            }
+
+            if (!entryDate) {
+                showNotification('请选择入职日期', 'warning');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            try {
+                // 构建更新数据
+                const empData = {
+                    name,
+                    gender,
+                    department,
+                    position,
+                    entryDate
+                };
+
+                // 发送PUT请求更新员工
+                await axios.put(`/emps/${id}`, empData);
+
+                // 关闭模态框并重新加载员工数据
+                closeEditEmpModal();
+                await loadEmployees();
+                showNotification('员工更新成功！');
+            } catch (error) {
+                console.error('更新员工失败:', error);
+                showNotification('更新员工失败，请重试！', 'error');
+            }
+        }
+        
+        // 删除员工
+        async function deleteEmployee(id) {
+            if (confirm('确认删除该员工吗？')) {
+                try {
+                    // 发送DELETE请求删除员工
+                    await axios.delete(`/emps/${id}`);
+                    
+                    // 重新加载员工数据
+                    await loadEmployees();
+                    showNotification('员工删除成功！');
+                } catch (error) {
+                    console.error('删除员工失败:', error);
+                    showNotification('删除员工失败，请重试！', 'error');
+                }
+            }
+        }
+        
+        // 批量删除员工
+        async function batchDeleteEmployees() {
+            const selectedCheckboxes = document.querySelectorAll('.emp-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                showNotification('请先选择要删除的员工', 'warning');
+                return;
+            }
+            
+            if (confirm(`确认删除选中的${selectedCheckboxes.length}名员工吗？`)) {
+                try {
+                    // 收集要删除的员工ID
+                    const idsToDelete = Array.from(selectedCheckboxes).map(checkbox => 
+                        parseInt(checkbox.getAttribute('data-id'))
+                    );
+                    
+                    // 发送DELETE请求批量删除员工
+                    await axios.delete('/emps', {
+                        data: { ids: idsToDelete }
+                    });
+                    
+                    // 重新加载员工数据
+                    await loadEmployees();
+                    // 取消全选
+                    document.getElementById('select-all-checkbox').checked = false;
+                    // 更新批量删除按钮状态
+                    updateBatchDeleteButton();
+                    
+                    showNotification('员工批量删除成功！');
+                } catch (error) {
+                    console.error('批量删除员工失败:', error);
+                    showNotification('批量删除员工失败，请重试！', 'error');
+                }
+            }
+        }
+        
+        // 搜索员工
+        async function searchEmployees() {
+            const searchName = document.getElementById('search-emp-name').value.trim();
+            const searchGender = document.getElementById('search-emp-gender').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            try {
+                // 发送GET请求搜索员工，包含搜索条件和分页参数
+                const response = await axios.get('/emp', {
+                    params: {
+                        name: searchName,
+                        gender: searchGender,
+                        startDate,
+                        endDate,
+                        page: 1, // 搜索时重置为第一页
+                        pageSize: pageSize
+                    }
+                });
+                
+                // 获取响应数据
+                const result = response.data.data;
+                
+                // 处理不同的数据结构情况
+                let employeesData = [];
+                let totalCount = 0;
+                
+                if (Array.isArray(result)) {
+                    // 如果data是数组，直接使用
+                    employeesData = result;
+                    totalCount = result.length;
+                } else if (result && typeof result === 'object') {
+                    // 如果data是对象，尝试从不同字段获取数据
+                    employeesData = result.records || result.data || [];
+                    totalCount = result.total || (result.records ? result.records.length : 0);
+                }
+                
+                employees = employeesData;
+                
+                // 渲染搜索结果
+                renderEmployees(employees);
+                
+                // 更新分页信息
+                document.querySelector('.pagination .page-controls span').textContent = `共${totalCount}条数据`;
+                
+                // 重置为第一页并更新分页按钮
+                currentPage = 1;
+                updatePaginationButtons(totalCount);
+                
+                // 显示搜索结果通知
+                showNotification(`找到${totalCount}条匹配记录`);
+            } catch (error) {
+                console.error('搜索员工失败:', error);
+                showNotification('搜索失败，请重试！', 'error');
+            }
+        }
+        
+        // 重置搜索
+        async function resetSearch() {
+            document.getElementById('search-emp-name').value = '';
+            document.getElementById('search-emp-gender').value = '';
+            document.getElementById('start-date').value = '';
+            document.getElementById('end-date').value = '';
+            
+            // 重新加载数据
+            await loadEmployees();
+        }
+        
+        // 绑定分页按钮事件
+        function bindPaginationButtons() {
+            document.getElementById('prev-page').addEventListener('click', async () => {
+                if (currentPage > 1) {
+                    await changePage(currentPage - 1);
+                }
+            });
+            
+            document.getElementById('next-page').addEventListener('click', async () => {
+                // 从分页信息中获取总记录数
+                const totalText = document.querySelector('.pagination .page-controls span').textContent;
+                const total = parseInt(totalText.match(/共(\d+)条数据/)?.[1] || '0');
+                const totalPages = Math.ceil(total / pageSize);
+                
+                if (currentPage < totalPages) {
+                    await changePage(currentPage + 1);
+                }
+            });
+        }
+        
+        // 切换页面
+        async function changePage(page) {
+            currentPage = page;
+            
+            // 重新加载数据
+            await loadEmployees();
+            
+            // 更新分页按钮状态 - 这里不需要手动更新，loadEmployees会处理
+        }
+        
+        // 更新分页按钮
+        function updatePaginationButtons(total) {
+            // 确保总记录数至少为当前员工列表长度
+            total = Math.max(total || 0, employees.length);
+            const totalPages = Math.ceil(total / pageSize);
+            
+            // 更新上一页按钮状态
+            const prevBtn = document.getElementById('prev-page');
+            prevBtn.disabled = currentPage === 1;
+            
+            // 更新下一页按钮状态
+            const nextBtn = document.getElementById('next-page');
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // 更新页码输入框
+            document.getElementById('page-jump').value = currentPage;
+            
+            // 动态生成页码按钮
+            const pageControls = document.querySelector('.pagination .page-controls > div');
+            // 清空除了上一页和下一页按钮外的所有页码按钮
+            while (pageControls.children.length > 2) {
+                pageControls.removeChild(pageControls.children[1]);
+            }
+            
+            // 生成页码按钮
+            if (totalPages > 0) {
+                // 确定显示的页码范围
+                let startPage = Math.max(1, currentPage - 1);
+                let endPage = Math.min(totalPages, startPage + 2);
+                
+                // 如果末尾页码与总页数相差较大，调整起始页码
+                if (endPage - startPage < 2) {
+                    startPage = Math.max(1, endPage - 2);
+                }
+                
+                // 在第一页和起始页之间添加省略号
+                if (startPage > 1) {
+                    const firstPageBtn = document.createElement('button');
+                    firstPageBtn.className = 'page-btn';
+                    firstPageBtn.textContent = '1';
+                    firstPageBtn.onclick = () => changePage(1);
+                    if (1 === currentPage) firstPageBtn.classList.add('active');
+                    pageControls.insertBefore(firstPageBtn, pageControls.children[1]);
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('button');
+                        ellipsis.className = 'page-btn';
+                        ellipsis.textContent = '...';
+                        ellipsis.disabled = true;
+                        pageControls.insertBefore(ellipsis, pageControls.children[2]);
+                    }
+                }
+                
+                // 添加中间页码按钮
+                for (let i = startPage; i <= endPage; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'page-btn';
+                    btn.textContent = i;
+                    btn.onclick = () => changePage(i);
+                    if (i === currentPage) btn.classList.add('active');
+                    pageControls.insertBefore(btn, pageControls.children[pageControls.children.length - 1]);
+                }
+                
+                // 在末尾页和总页数之间添加省略号
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const ellipsis = document.createElement('button');
+                        ellipsis.className = 'page-btn';
+                        ellipsis.textContent = '...';
+                        ellipsis.disabled = true;
+                        pageControls.insertBefore(ellipsis, pageControls.children[pageControls.children.length - 1]);
+                    }
+                    
+                    const lastPageBtn = document.createElement('button');
+                    lastPageBtn.className = 'page-btn';
+                    lastPageBtn.textContent = totalPages;
+                    lastPageBtn.onclick = () => changePage(totalPages);
+                    if (totalPages === currentPage) lastPageBtn.classList.add('active');
+                    pageControls.insertBefore(lastPageBtn, pageControls.children[pageControls.children.length - 1]);
+                }
+            }
+        }
+        
+        // 改变每页显示的记录数
+        async function changePageSize() {
+            pageSize = parseInt(document.getElementById('page-size-select').value);
+            currentPage = 1; // 重置为第一页
+            
+            // 显示加载状态
+            const tbody = document.getElementById('emp-tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">加载中...</td></tr>';
+            
+            // 重新加载数据
+            await loadEmployees();
+        }
+        
+        // 跳转到指定页
+        async function jumpToPage() {
+            const pageNum = parseInt(document.getElementById('page-jump').value);
+            // 从分页信息中获取总记录数
+            const totalText = document.querySelector('.pagination .page-controls span').textContent;
+            const total = parseInt(totalText.match(/共(\d+)条数据/)?.[1] || '0');
+            const totalPages = Math.ceil(total / pageSize);
+            
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                await changePage(pageNum);
+            } else {
+                showNotification(`请输入1-${totalPages}之间的页码`, 'warning');
+                document.getElementById('page-jump').value = currentPage;
+            }
+        }
+        
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all-checkbox');
+            const checkboxes = document.querySelectorAll('.emp-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            // 更新批量删除按钮状态
+            updateBatchDeleteButton();
+        }
+        
+        // 更新批量删除按钮状态
+        function updateBatchDeleteButton() {
+            const selectedCheckboxes = document.querySelectorAll('.emp-checkbox:checked');
+            const batchDeleteBtn = document.getElementById('batch-delete-btn');
+            
+            if (selectedCheckboxes.length > 0) {
+                batchDeleteBtn.classList.add('active');
+                batchDeleteBtn.style.display = 'inline-block';
+            } else {
+                batchDeleteBtn.classList.remove('active');
+                batchDeleteBtn.style.display = 'none';
+            }
+            
+            // 更新全选复选框状态
+            const allCheckboxes = document.querySelectorAll('.emp-checkbox');
+            const selectAll = document.getElementById('select-all-checkbox');
+            if (allCheckboxes.length === 0) {
+                selectAll.checked = false;
+            } else {
+                selectAll.checked = Array.from(allCheckboxes).every(checkbox => checkbox.checked);
+            }
+        }
+    </script>
+</body>
+</html>
